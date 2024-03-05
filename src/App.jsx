@@ -6,6 +6,8 @@ import Confetti from 'react-confetti';
 export default function App() {
   const [dice, setDice] = useState(allNewDice());
   const [tenzies, setTenzies] = useState(false);
+  const [rollCount, setRollCount] = useState(0);
+  const leastRolls = parseInt((localStorage.getItem("least-roll"))) || 0;
 
   useEffect(() => {
     const valueRef = dice[0].value
@@ -37,9 +39,13 @@ export default function App() {
           return prevDie.isHeld ? prevDie : generateNewDie();
         });
       });
+      setRollCount(prevCount => prevCount + 1);
     } else {
       setTenzies(false);
       setDice(allNewDice());
+      setRollCount(0);
+      //Set the least no of rolls to local storage
+      (rollCount < leastRolls) && localStorage.setItem('least-roll', JSON.stringify(rollCount));
     }
   }
 
@@ -68,6 +74,10 @@ export default function App() {
         current value between rolls.
       </p>
       <div className="dice-container">{diceElements}</div>
+      <div className="dice-stats">
+        <h2>Least Rolls: <span className='dice-stats-color'>{leastRolls}</span></h2>
+        {tenzies && <h2>You rolled <span className='dice-stats-color'>{rollCount}</span> times</h2>}
+      </div>
       <button 
       className="roll-dice" 
       onClick={rollDice}>
